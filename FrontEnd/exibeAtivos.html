@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ativos</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+
+        tr {
+            cursor: pointer;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Lista de Ativos</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Patrimônio</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Setor</th>
+            <th>Responsável</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody id="tabela"></tbody>
+</table>
+
+<script>
+
+function abrirAtivo(id) {
+    window.location.href = `ativo.html?id=${id}`;
+}
+
+async function carregarAtivos() {
+    try {
+        const res = await fetch('/api/ativos');
+        const ativos = await res.json();
+
+        const tabela = document.getElementById("tabela");
+        tabela.innerHTML = "";
+
+        ativos.forEach(a => {
+            tabela.innerHTML += `
+                <tr onclick="abrirAtivo('${a.patrimonio}')">
+                    <td>${a.patrimonio}</td>
+                    <td>${a.descricao}</td>
+                    <td>${a.categoria}</td>
+                    <td>${a.setor}</td>
+                    <td>${a.responsavel}</td>
+                    <td>${a.status}</td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao carregar ativos");
+    }
+}
+
+carregarAtivos();
+
+</script>
+
+</body>
+</html>
