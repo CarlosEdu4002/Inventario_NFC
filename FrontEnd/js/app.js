@@ -1,34 +1,89 @@
-const parametros = new URLSearchParams(window.location.search);
-const id = parametros.get("id");
+let ativosCarregados = [];
+let ativoSelecionado = null;
 
-const container = document.getElementById("dados");
+function selecionarLinha(id, linha){
 
-if (!id) {
-    container.innerHTML = "<h2>Nenhum patrimônio informado na URL</h2>";
-} else {
+    document.querySelectorAll("#tabela tr")
+        .forEach(tr => tr.classList.remove("selecionado"));
 
-    fetch('/api/ativos')
-        .then(res => res.json())
-        .then(ativos => {
+    linha.classList.add("selecionado");
 
-            const ativo = ativos.find(
-                a => a.patrimonio.trim() === id.trim()
-            );
-
-            if (!ativo) {
-                container.innerHTML = `<h2>Ativo ${id} não encontrado</h2>`;
-                return;
-            }
-
-            container.innerHTML = `
-                <h2>${ativo.patrimonio}</h2>
-                <p><strong>Descrição:</strong> ${ativo.descricao}</p>
-                <p><strong>Setor:</strong> ${ativo.setor}</p>
-                <p><strong>Responsável:</strong> ${ativo.responsavel}</p>
-            `;
-        })
-        .catch(err => {
-            console.error(err);
-            container.innerHTML = "<h2>Erro ao carregar API</h2>";
-        });
+    ativoSelecionado = id;
 }
+
+function abrirAtivo(id){
+    window.location.href = `ativo.html?id=${id}`;
+}
+
+async function carregarAtivos(){
+
+    try{
+
+        const res = await fetch('/api/ativos');
+        const ativos = await res.json();
+
+        ativosCarregados = ativos;
+
+        const tabela = document.getElementById("tabela");
+
+        tabela.innerHTML = "";
+
+        ativos.forEach(a => {
+
+            const linha = document.createElement("tr");
+
+            linha.innerHTML = `
+                <td>${a.patrimonio}</td>
+                <td>${a.descricao}</td>
+                <td>${a.categoria}</td>
+                <td>${a.setor}</td>
+                <td>${a.responsavel}</td>
+                <td>${a.status}</td>
+            `;
+
+            linha.addEventListener("click", () => {
+                selecionarLinha(a.patrimonio, linha);
+            });
+
+            linha.addEventListener("dblclick", () => {
+                abrirAtivo(a.patrimonio);
+            });
+
+            tabela.appendChild(linha);
+
+        });
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+        alert("Erro ao carregar ativos");
+
+    }
+}
+
+function buscarAtivo(){
+
+    const texto = document
+        .getElementById("buscaId")
+        .value
+        .trim()
+        .toUpperCase();
+
+    const ativo = ativosCarregados.find(
+        a => a.patrimonio.toUpperCase() === texto
+    );
+
+    if(!ativo){
+
+        alert("Ativo não encontrado");
+
+        return;
+    }
+
+    abrirAtivo(ativo.patrimonio);
+}
+
+carregarAtivos();
