@@ -59,7 +59,7 @@ async function carregarAtivos(){
 
         console.error(err);
 
-        alert("Erro ao carregar ativos");
+        //alert("Erro ao carregar ativos");
 
     }
 }

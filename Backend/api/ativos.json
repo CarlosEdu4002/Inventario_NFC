@@ -1,13 +1,5 @@
 [
   {
-    "patrimonio": "PTN003",
-    "descricao": "Paleteira",
-    "categoria": "Baixa",
-    "setor": "Almox",
-    "responsavel": "Iris",
-    "status": "Em uso"
-  },
-  {
     "patrimonio": "PTN004",
     "descricao": "",
     "categoria": "",
