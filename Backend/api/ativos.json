@@ -1,26 +1,10 @@
 [
   {
-    "patrimonio": "PTN004",
-    "descricao": "",
-    "categoria": "",
-    "setor": "",
-    "responsavel": "",
-    "status": "Em uso"
-  },
-  {
-    "patrimonio": "PTN005",
-    "descricao": "",
-    "categoria": "",
-    "setor": "",
-    "responsavel": "",
-    "status": ""
-  },
-  {
-    "patrimonio": "PTN006",
-    "descricao": "",
-    "categoria": "",
-    "setor": "",
-    "responsavel": "",
-    "status": ""
+    "patrimonio": "PTN001",
+    "descricao": "Paleteira 1",
+    "categoria": "1",
+    "setor": "2",
+    "responsavel": "3",
+    "status": "Disponível"
   }
 ]

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     document
-        .getElementById("botaoEmpilhadeira")
+        .getElementById("botaoPaleteira")
         .addEventListener("click", () => {
             window.location.href = "/exibeAtivos.html";
         });
