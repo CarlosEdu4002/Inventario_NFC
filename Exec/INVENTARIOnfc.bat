@@ -1,6 +1,6 @@
 @echo off
 
-set DIR=C:\Users\carlos.carvalho\Desktop\arquivosDiversos\programacao\InventarioNFC\Backend\api
+set DIR=C:\caminho_do_server.js
 
 REM entra na pasta
 cd /d "%DIR%"
