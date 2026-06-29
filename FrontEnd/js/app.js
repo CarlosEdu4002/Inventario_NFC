@@ -1,3 +1,5 @@
+window.tipo = new URLSearchParams(window.location.search).get("tipo") || "paleteiras";
+
 let ativosCarregados = [];
 let ativoSelecionado = null;
 
@@ -12,14 +14,14 @@ function selecionarLinha(id, linha){
 }
 
 function abrirAtivo(id){
-    window.location.href = `ativo.html?id=${id}`;
+    window.location.href = `ativo.html?tipo=${tipo}&id=${id}`;
 }
 
 async function carregarAtivos(){
 
     try{
 
-        const res = await fetch('/api/ativos');
+        const res = await fetch(`/api/${tipo}`);
         const ativos = await res.json();
 
         ativosCarregados = ativos;

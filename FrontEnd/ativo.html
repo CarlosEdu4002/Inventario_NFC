@@ -32,8 +32,11 @@
 
   <script>
     // Pega o ID da URL: ativo.html?id=PAL001
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+// Pega os parâmetros da URL
+const params = new URLSearchParams(window.location.search);
+
+const tipo = params.get("tipo") || "paleteiras";
+const id = params.get("id");
 
     async function carregarAtivo() {
       const container = document.getElementById("conteudo");
@@ -44,7 +47,7 @@
       }
 
       try {
-        const response = await fetch(`/api/ativos/${id}`);
+        const response = await fetch(`/api/${tipo}/${id}`);
 
         if (!response.ok) {
           throw new Error("Ativo não encontrado");

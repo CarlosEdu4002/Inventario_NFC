@@ -3,6 +3,10 @@ const fs = require('fs');
 const cors = require('cors');
 const path = require('path');
 
+function caminhoArquivo(tipo) {
+    return path.join(__dirname, "dados", `${tipo}.json`);
+}
+
 const app = express();
 const PORT = 3000;
 app.use(express.static(path.join(__dirname, '../../Imagens')));
@@ -15,9 +19,11 @@ LISTAR TODOS OS ATIVOS
 GET /api/ativos
 =========================================
 */
-app.get('/api/ativos', (req, res) => {
+app.get('/api/:tipo', (req, res) => {
 
-    fs.readFile('ativos.json', 'utf8', (err, data) => {
+    const arquivo = caminhoArquivo(req.params.tipo);
+
+    fs.readFile(arquivo, 'utf8', (err, data) => {
 
         if (err) {
             return res.status(500).json({
@@ -37,9 +43,11 @@ BUSCAR UM ATIVO
 GET /api/ativos/PTN001
 =========================================
 */
-app.get('/api/ativos/:id', (req, res) => {
+app.get('/api/:tipo/:id', (req, res) => {
 
-    fs.readFile('ativos.json', 'utf8', (err, data) => {
+    const arquivo = caminhoArquivo(req.params.tipo);
+
+    fs.readFile(arquivo, 'utf8', (err, data) => {
 
         if (err) {
             return res.status(500).json({
@@ -71,9 +79,11 @@ ADICIONAR ATIVO
 POST /api/ativos
 =========================================
 */
-app.post('/api/ativos', (req, res) => {
+app.post('/api/:tipo', (req, res) => {
 
-    fs.readFile('ativos.json', 'utf8', (err, data) => {
+    const arquivo = caminhoArquivo(req.params.tipo);
+
+    fs.readFile(arquivo, 'utf8', (err, data) => {
 
         if (err) {
             return res.status(500).json({
@@ -96,7 +106,7 @@ app.post('/api/ativos', (req, res) => {
         ativos.push(req.body);
 
         fs.writeFile(
-            'ativos.json',
+                arquivo,
             JSON.stringify(ativos, null, 2),
             err => {
 
@@ -123,9 +133,11 @@ EDITAR ATIVO
 PUT /api/ativos/PTN001
 =========================================
 */
-app.put('/api/ativos/:id', (req, res) => {
+app.put('/api/:tipo/:id', (req, res) => {
 
-    fs.readFile('ativos.json', 'utf8', (err, data) => {
+    const arquivo = caminhoArquivo(req.params.tipo);
+
+    fs.readFile(arquivo, 'utf8', (err, data) => {
 
         if (err) {
             return res.status(500).json({
@@ -148,7 +160,7 @@ app.put('/api/ativos/:id', (req, res) => {
         ativos[indice] = req.body;
 
         fs.writeFile(
-            'ativos.json',
+                arquivo,
             JSON.stringify(ativos, null, 2),
             err => {
 
@@ -175,9 +187,11 @@ REMOVER ATIVO
 DELETE /api/ativos/PTN001
 =========================================
 */
-app.delete('/api/ativos/:id', (req, res) => {
+app.delete('/api/:tipo/:id', (req, res) => {
 
-    fs.readFile('ativos.json', 'utf8', (err, data) => {
+    const arquivo = caminhoArquivo(req.params.tipo);
+
+    fs.readFile(arquivo, 'utf8', (err, data) => {
 
         if (err) {
             return res.status(500).json({
@@ -201,8 +215,8 @@ app.delete('/api/ativos/:id', (req, res) => {
             a => a.patrimonio !== req.params.id
         );
 
-        fs.writeFile(
-            'ativos.json',
+      fs.writeFile(
+            arquivo,
             JSON.stringify(novosAtivos, null, 2),
             err => {
 
