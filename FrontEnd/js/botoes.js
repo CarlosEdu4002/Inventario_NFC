@@ -16,22 +16,22 @@ if (btnAdicionar) {
 
     btnAdicionar.addEventListener("click", async () => {
 
-        const patrimonio = prompt("Patrimônio:");
-        if (!patrimonio) return;
+const novoAtivo = {};
 
-        const descricao = prompt("Descrição:");
-        const categoria = prompt("Categoria:");
-        const setor = prompt("Setor:");
-        const responsavel = prompt("Responsável:");
+for (const campo of CONFIG_CATEGORIAS[tipo].campos) {
 
-        const novoAtivo = {
-            patrimonio,
-            descricao,
-            categoria,
-            setor,
-            responsavel,
-            status: "Disponível"
-        };
+    if (campo.cadastrar === false) {
+        novoAtivo[campo.nome] = campo.valorPadrao;
+        continue;
+    }
+
+    const valor = prompt(campo.label + ":");
+
+    if (valor === null) return;
+
+    novoAtivo[campo.nome] = valor;
+
+}
 
         await fetch(`/api/${tipo}`, {
             method: "POST",
@@ -64,20 +64,23 @@ if (btnEditar) {
         const res = await fetch(`/api/${tipo}/${ativoSelecionado}`);
         const ativo = await res.json();
 
-        const descricao = prompt("Descrição:", ativo.descricao);
-        if (descricao === null) return;
+        const atualizado = { ...ativo };
 
-        const categoria = prompt("Categoria:", ativo.categoria);
-        const setor = prompt("Setor:", ativo.setor);
-        const responsavel = prompt("Responsável:", ativo.responsavel);
+for (const campo of CONFIG_CATEGORIAS[tipo].campos) {
 
-        const atualizado = {
-            ...ativo,
-            descricao,
-            categoria,
-            setor,
-            responsavel
-        };
+    // Normalmente não faz sentido editar o patrimônio
+    if (campo.editavel === false) continue;
+
+    const valor = prompt(
+        campo.label + ":",
+        ativo[campo.nome] ?? ""
+    );
+
+    if (valor === null) return;
+
+    atualizado[campo.nome] = valor;
+
+}
 
         await fetch(`/api/${tipo}/${ativoSelecionado}`, {
             method: "PUT",

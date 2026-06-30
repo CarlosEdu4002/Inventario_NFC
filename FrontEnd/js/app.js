@@ -34,14 +34,15 @@ async function carregarAtivos(){
 
             const linha = document.createElement("tr");
 
-            linha.innerHTML = `
-                <td>${a.patrimonio}</td>
-                <td>${a.descricao}</td>
-                <td>${a.categoria}</td>
-                <td>${a.setor}</td>
-                <td>${a.responsavel}</td>
-                <td>${a.status}</td>
-            `;
+        CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
+
+            const td = document.createElement("td");
+
+            td.textContent = a[campo.nome] ?? "";
+
+        linha.appendChild(td);
+
+});
 
             linha.addEventListener("click", () => {
                 selecionarLinha(a.patrimonio, linha);
@@ -88,4 +89,23 @@ function buscarAtivo(){
     abrirAtivo(ativo.patrimonio);
 }
 
+function montarCabecalho() {
+
+    const cabecalho = document.getElementById("cabecalhoTabela");
+
+    cabecalho.innerHTML = "";
+
+    CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
+
+        const th = document.createElement("th");
+
+        th.textContent = campo.label;
+
+        cabecalho.appendChild(th);
+
+    });
+
+}
+
+montarCabecalho();
 carregarAtivos();
