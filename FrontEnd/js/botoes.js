@@ -12,40 +12,9 @@ if (btnBuscar) {
 // =====================
 const btnAdicionar = document.getElementById("btnAdicionar");
 
-if (btnAdicionar) {
-
-    btnAdicionar.addEventListener("click", async () => {
-
-const novoAtivo = {};
-
-for (const campo of CONFIG_CATEGORIAS[tipo].campos) {
-
-    if (campo.cadastrar === false) {
-        novoAtivo[campo.nome] = campo.valorPadrao;
-        continue;
-    }
-
-    const valor = prompt(campo.label + ":");
-
-    if (valor === null) return;
-
-    novoAtivo[campo.nome] = valor;
-
-}
-
-        await fetch(`/api/${tipo}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(novoAtivo)
-        });
-
-        carregarAtivos();
-
-    });
-
-}
+btnAdicionar.addEventListener("click", () => {
+    abrirModal();
+});
 
 // =====================
 // Editar
@@ -64,36 +33,8 @@ if (btnEditar) {
         const res = await fetch(`/api/${tipo}/${ativoSelecionado}`);
         const ativo = await res.json();
 
-        const atualizado = { ...ativo };
-
-for (const campo of CONFIG_CATEGORIAS[tipo].campos) {
-
-    // Normalmente não faz sentido editar o patrimônio
-    if (campo.editavel === false) continue;
-
-    const valor = prompt(
-        campo.label + ":",
-        ativo[campo.nome] ?? ""
-    );
-
-    if (valor === null) return;
-
-    atualizado[campo.nome] = valor;
-
-}
-
-        await fetch(`/api/${tipo}/${ativoSelecionado}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(atualizado)
-        });
-
-        carregarAtivos();
-
+        abrirModalEdicao(ativo);
     });
-
 }
 
 // =====================
@@ -111,7 +52,6 @@ if (btnRemover) {
         }
 
         const confirmar = confirm(`Deseja remover ${ativoSelecionado}?`);
-
         if (!confirmar) return;
 
         try {
@@ -125,19 +65,13 @@ if (btnRemover) {
             alert(dados.mensagem);
 
             ativoSelecionado = null;
-
             carregarAtivos();
 
         } catch (erro) {
-
             console.error(erro);
-
             alert("Erro ao remover ativo");
-
         }
-
     });
-
 }
 
 // =====================
@@ -166,14 +100,10 @@ if (btnStatus) {
 
         await fetch(`/api/${tipo}/${ativoSelecionado}`, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(atualizado)
         });
 
         carregarAtivos();
-
     });
-
 }

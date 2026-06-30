@@ -157,10 +157,14 @@ app.put('/api/:tipo/:id', (req, res) => {
             });
         }
 
-        ativos[indice] = req.body;
+        // 🔥 CORREÇÃO AQUI
+        ativos[indice] = {
+            ...ativos[indice],
+            ...req.body
+        };
 
         fs.writeFile(
-                arquivo,
+            arquivo,
             JSON.stringify(ativos, null, 2),
             err => {
 

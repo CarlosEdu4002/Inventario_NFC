@@ -73,10 +73,10 @@
   },
   {
     "patrimonio": "PAT-010",
-    "descricao": "",
-    "categoria": "",
-    "setor": "",
-    "responsavel": "",
+    "descricao": "TESTE",
+    "categoria": "TESTE",
+    "setor": "TESTE",
+    "responsavel": "TESTE",
     "status": "Disponível"
   }
 ]
