@@ -133,3 +133,47 @@ formModal.addEventListener("submit", async (e) => {
     fecharModal();
     carregarAtivos();
 });
+
+function confirmarExclusao(texto, callback){
+
+    const modal = document.getElementById("modalConfirmacao");
+
+    const textoConfirmacao = document.getElementById("textoConfirmacao");
+
+    const btnCancelar = document.getElementById("btnCancelarRemocao");
+
+    const btnConfirmar = document.getElementById("btnConfirmarRemocao");
+
+    textoConfirmacao.textContent = texto;
+
+    modal.classList.remove("oculto");
+
+    function fechar(){
+
+        modal.classList.add("oculto");
+
+        btnCancelar.removeEventListener("click", cancelar);
+
+        btnConfirmar.removeEventListener("click", confirmar);
+
+    }
+
+    function cancelar(){
+
+        fechar();
+
+    }
+
+    function confirmar(){
+
+        fechar();
+
+        callback();
+
+    }
+
+    btnCancelar.addEventListener("click", cancelar);
+
+    btnConfirmar.addEventListener("click", confirmar);
+
+}

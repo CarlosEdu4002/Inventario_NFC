@@ -44,34 +44,39 @@ const btnRemover = document.getElementById("btnRemover");
 
 if (btnRemover) {
 
-    btnRemover.addEventListener("click", async () => {
+    btnRemover.addEventListener("click", () => {
 
         if (!ativoSelecionado) {
             alert("Selecione um ativo");
             return;
         }
 
-        const confirmar = confirm(`Deseja remover ${ativoSelecionado}?`);
-        if (!confirmar) return;
+        confirmarExclusao(`Deseja remover ${ativoSelecionado}?`, async () => {
 
-        try {
+            try {
 
-            const resposta = await fetch(`/api/${tipo}/${ativoSelecionado}`, {
-                method: "DELETE"
-            });
+                const resposta = await fetch(`/api/${tipo}/${ativoSelecionado}`, {
+                    method: "DELETE"
+                });
 
-            const dados = await resposta.json();
+                const dados = await resposta.json();
 
-            alert(dados.mensagem);
+                alert(dados.mensagem);
 
-            ativoSelecionado = null;
-            carregarAtivos();
+                ativoSelecionado = null;
+                carregarAtivos();
 
-        } catch (erro) {
-            console.error(erro);
-            alert("Erro ao remover ativo");
-        }
+            } catch (erro) {
+
+                console.error(erro);
+                alert("Erro ao remover ativo");
+
+            }
+
+        });
+
     });
+
 }
 
 // =====================
