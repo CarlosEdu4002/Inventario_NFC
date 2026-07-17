@@ -17,9 +17,9 @@ function abrirAtivo(id){
     window.location.href = `ativo.html?tipo=${tipo}&id=${id}`;
 }
 
-async function carregarAtivos(){
+async function carregarAtivos() {
 
-    try{
+    try {
 
         const res = await fetch(`/api/${tipo}`);
         const ativos = await res.json();
@@ -27,44 +27,50 @@ async function carregarAtivos(){
         ativosCarregados = ativos;
 
         const tabela = document.getElementById("tabela");
-
         tabela.innerHTML = "";
+
+        const isTouch = navigator.maxTouchPoints > 0;
 
         ativos.forEach(a => {
 
             const linha = document.createElement("tr");
 
-        CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
+            CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
 
-            const td = document.createElement("td");
+                const td = document.createElement("td");
+                td.textContent = a[campo.nome] ?? "";
+                linha.appendChild(td);
 
-            td.textContent = a[campo.nome] ?? "";
-
-        linha.appendChild(td);
-
-});
+            });
 
             linha.addEventListener("click", () => {
+
                 selecionarLinha(a.patrimonio, linha);
+
+                if (isTouch) {
+                    abrirAtivo(a.patrimonio);
+                }
+
             });
 
-            linha.addEventListener("dblclick", () => {
-                abrirAtivo(a.patrimonio);
-            });
+            if (!isTouch) {
+
+                linha.addEventListener("dblclick", () => {
+                    abrirAtivo(a.patrimonio);
+                });
+
+            }
 
             tabela.appendChild(linha);
 
         });
 
-    }
-
-    catch(err){
+    } catch (err) {
 
         console.error(err);
 
-        //alert("Erro ao carregar ativos");
-
     }
+
 }
 
 function buscarAtivo(){

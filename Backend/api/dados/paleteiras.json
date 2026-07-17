@@ -1,3 +1,10 @@
 [
-
+  {
+    "patrimonio": "PTN-001",
+    "descricao": "Paleteira azul",
+    "categoria": "Movimentação",
+    "setor": "Almoxarifado",
+    "responsavel": "Iris",
+    "status": "Disponivel"
+  }
 ]
