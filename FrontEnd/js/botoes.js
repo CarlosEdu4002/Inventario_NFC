@@ -112,3 +112,26 @@ if (btnStatus) {
         carregarAtivos();
     });
 }
+// =====================
+// Imprimir Etiqueta
+// =====================
+
+const btnEtiqueta = document.getElementById("btnEtiqueta");
+
+if (btnEtiqueta) {
+
+    btnEtiqueta.addEventListener("click", () => {
+
+        if (!ativoSelecionado) {
+            alert("Selecione um ativo");
+            return;
+        }
+
+        window.open(
+            `etiqueta.html?tipo=${tipo}&id=${ativoSelecionado}`,
+            "_blank"
+        );
+
+    });
+
+}
