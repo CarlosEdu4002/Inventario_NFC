@@ -190,3 +190,13 @@ header h2{
     background:#b71c1c;
 
 }
+
+#btnRetornar{
+    border: 2px solid #2e7de0;
+    color: #2e7de0;
+    background-color: white;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}

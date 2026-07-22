@@ -6,5 +6,13 @@
     "setor": "Almoxarifado",
     "responsavel": "Iris",
     "status": "Disponivel"
+  },
+  {
+    "patrimonio": "PTN-002",
+    "descricao": "Paleteira",
+    "categoria": "Paleteira",
+    "setor": "Almox",
+    "responsavel": "Iris",
+    "status": "Disponivel"
   }
 ]

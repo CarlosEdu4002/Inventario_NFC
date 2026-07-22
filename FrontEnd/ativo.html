@@ -22,11 +22,20 @@
         Carregando dados do ativo...
     </div>
 
-    <div class="botoes">
-        <button class="botao" onclick="history.back()">
-            Voltar
-        </button>
-    </div>
+<div class="botoes">
+    <button class="botao" onclick="voltarPagina()">
+        Voltar
+    </button>
+</div>
+
+<script>
+function voltarPagina() {
+    const params = new URLSearchParams(window.location.search);
+    const tipo = params.get("tipo");
+
+    window.location.href = `exibeAtivos.html?tipo=${tipo}`;
+}
+</script>
 
 </div>
 <script src="js/config/configCategoria.js"></script>

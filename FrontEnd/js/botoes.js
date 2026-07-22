@@ -135,3 +135,17 @@ if (btnEtiqueta) {
     });
 
 }
+
+// =====================
+// Retornar a tela de seleção
+// =====================
+
+const btnRetornar = document.getElementById("btnRetornar");
+
+if (btnRetornar) {
+    btnRetornar.addEventListener("click", () => {
+
+    window.open("index.html", "_self")
+
+})
+};

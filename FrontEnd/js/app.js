@@ -24,7 +24,15 @@ async function carregarAtivos() {
         const res = await fetch(`/api/${tipo}`);
         const ativos = await res.json();
 
-        ativosCarregados = ativos;
+// Ordena pelo patrimônio
+    ativos.sort((a, b) =>
+    a.patrimonio.localeCompare(b.patrimonio, undefined, {
+        numeric: true,
+        sensitivity: "base"
+    })
+);
+
+ativosCarregados = ativos;
 
         const tabela = document.getElementById("tabela");
         tabela.innerHTML = "";
