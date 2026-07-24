@@ -1,109 +1,127 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Ativos</title>
-<link rel="icon" href="/Imagens/favicon.ico">
-<link rel="stylesheet" href="css/style_exibeAtivos.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ativos | Controle Patrimonial</title>
+    <link rel="icon" href="/Imagens/favicon.ico">
+    <link rel="stylesheet" href="css/style_exibeAtivos.css">
 </head>
+<body>
+    <header class="cabecalho">
+        <a class="marca" href="index.html" aria-label="Página inicial">
+            <img src="/Imagens/patena.png" alt="Patena">
+            <span>Inventário NFC</span>
+        </a>
 
-<div id="modal" class="modal oculto">
-    <div class="modal-conteudo">
-        <h2 id="tituloModal"></h2>
-
-        <form id="formModal">
-
-            <div id="camposModal">
-                <!-- Campos gerados dinamicamente -->
-            </div>
-
-            <button type="submit">
-                Salvar
-            </button>
-
-            <button type="button" id="cancelarModal">
-                Cancelar
-            </button>
-
-        </form>
-    </div>
-</div>
-
-<div id="modalConfirmacao" class="modal oculto">
-    <div class="modal-conteudo">
-        <h2>Confirmar remoção</h2>
-
-        <p id="textoConfirmacao"></p>
-
-        <div class="acoes-confirmacao">
-
-            <button type="button" id="btnCancelarRemocao">
-                Cancelar
-            </button>
-
-            <button type="button" id="btnConfirmarRemocao" class="btn-remover">
-                Remover
+        <div class="acoes-cabecalho">
+            <a
+                class="atalho-admin"
+                href="administracao.html"
+                aria-label="Abrir administração"
+                title="Administração"
+            >
+                <span aria-hidden="true">⚙</span>
+                Administração
+            </a>
+            <button id="btnRetornar" type="button">
+                Voltar para seleção
             </button>
         </div>
+    </header>
+
+    <main>
+        <section class="identificacao-lista">
+            <p id="categoriaAtual" class="categoria-atual">
+                Carregando categoria...
+            </p>
+            <h1 id="tipoAtual">Carregando tipo de ativo...</h1>
+            <p class="descricao-lista">
+                Consulte e gerencie os itens patrimoniais deste tipo.
+            </p>
+        </section>
+
+        <section class="painel-ativos">
+            <div class="toolbar">
+                <div class="acoes-principais">
+                    <button id="btnAdicionar" type="button">Adicionar</button>
+                    <button id="btnEditar" type="button">Editar</button>
+                    <button id="btnRemover" type="button" class="secundario">
+                        Remover
+                    </button>
+                    <button id="btnEtiqueta" type="button">
+                        Imprimir etiqueta
+                    </button>
+                </div>
+
+                <div class="busca">
+                    <label class="sr-only" for="buscaId">
+                        Buscar patrimônio
+                    </label>
+                    <input
+                        type="text"
+                        id="buscaId"
+                        placeholder="Buscar patrimônio"
+                    >
+                    <button id="btnBuscar" type="button">Buscar</button>
+                </div>
+            </div>
+
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr id="cabecalhoTabela"></tr>
+                    </thead>
+                    <tbody id="tabela"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal" class="modal oculto">
+        <div class="modal-conteudo">
+            <h2 id="tituloModal"></h2>
+
+            <form id="formModal">
+                <div id="camposModal"></div>
+
+                <div class="acoes-modal">
+                    <button type="button" id="cancelarModal" class="secundario">
+                        Cancelar
+                    </button>
+                    <button type="submit">Salvar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<body>
-<header>
-    <img src="/Imagens/patena.png" alt="Patena">
-    <h2>Inventário NFC</h2>
-</header>
+    <div id="modalConfirmacao" class="modal oculto">
+        <div class="modal-conteudo">
+            <h2>Confirmar remoção</h2>
+            <p id="textoConfirmacao"></p>
 
-<h1>Lista de Ativos</h1>
+            <div class="acoes-modal">
+                <button
+                    type="button"
+                    id="btnCancelarRemocao"
+                    class="secundario"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="button"
+                    id="btnConfirmarRemocao"
+                    class="btn-remover"
+                >
+                    Remover
+                </button>
+            </div>
+        </div>
+    </div>
 
-<div class="toolbar">
-
-    <button id="btnAdicionar">
-        Adicionar
-    </button>
-
-    <button id="btnEditar">
-        Editar
-    </button>
-
-    <button id="btnRemover">
-        Remover
-    </button>
-
-    <button id="btnStatus">
-        Alterar Status
-    </button>
-
-    <button id="btnEtiqueta">
-    Imprimir Etiqueta
-    </button>
-
-    <input
-        type="text"
-        id="buscaId"
-        placeholder="Buscar patrimônio">
-
-    <button id="btnBuscar">
-        Buscar
-    </button>
-
-    <button id="btnRetornar">
-       ↩️​ Retornar a tela de seleção
-    </button>
-
-</div>
-
-<table>
-
-    <thead id="cabecalhoTabela"></thead>
-
-    <tbody id="tabela"></tbody>
-
-</table>
-<script src="js/config/configCategoria.js"></script>
-<script src="js/app.js"></script>
-<script src="js/modal.js"></script>
-<script src="js/botoes.js"></script>
-
+    <script src="js/camposDinamicos.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/botoes.js"></script>
 </body>
 </html>

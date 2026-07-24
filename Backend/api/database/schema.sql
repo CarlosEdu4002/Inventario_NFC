@@ -26,6 +26,9 @@ CREATE TABLE IF NOT EXISTS tipos_ativo (
         ON DELETE CASCADE
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tipos_ativo_categoria_nome
+    ON tipos_ativo (categoria_id, LOWER(nome));
+
 -- =========================
 -- CAMPOS
 -- =========================
@@ -37,6 +40,7 @@ CREATE TABLE IF NOT EXISTS campos (
     nome VARCHAR(100) NOT NULL,
     label VARCHAR(100) NOT NULL,
     tipo VARCHAR(30) NOT NULL,
+    opcoes JSONB NOT NULL DEFAULT '[]'::JSONB,
 
     obrigatorio BOOLEAN DEFAULT FALSE,
     editavel BOOLEAN DEFAULT TRUE,
@@ -52,6 +56,12 @@ CREATE TABLE IF NOT EXISTS campos (
         ON DELETE CASCADE
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_campos_tipo_nome
+    ON campos (tipo_ativo_id, LOWER(nome));
+
+ALTER TABLE campos
+    ADD COLUMN IF NOT EXISTS opcoes JSONB NOT NULL DEFAULT '[]'::JSONB;
+
 -- =========================
 -- ATIVOS
 -- =========================
@@ -61,6 +71,7 @@ CREATE TABLE IF NOT EXISTS ativos (
     tipo_ativo_id INTEGER NOT NULL,
 
     patrimonio VARCHAR(50) UNIQUE NOT NULL,
+    dados JSONB NOT NULL DEFAULT '{}'::JSONB,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -68,3 +79,7 @@ CREATE TABLE IF NOT EXISTS ativos (
         FOREIGN KEY (tipo_ativo_id)
         REFERENCES tipos_ativo(id)
 );
+
+-- Compatibilidade com bancos criados antes da coluna JSONB.
+ALTER TABLE ativos
+    ADD COLUMN IF NOT EXISTS dados JSONB NOT NULL DEFAULT '{}'::JSONB;

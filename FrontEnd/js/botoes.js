@@ -80,39 +80,6 @@ if (btnRemover) {
 }
 
 // =====================
-// Alterar Status
-// =====================
-const btnStatus = document.getElementById("btnStatus");
-
-if (btnStatus) {
-
-    btnStatus.addEventListener("click", async () => {
-
-        if (!ativoSelecionado) {
-            alert("Selecione um ativo");
-            return;
-        }
-
-        const res = await fetch(`/api/${tipo}/${ativoSelecionado}`);
-        const ativo = await res.json();
-
-        const atualizado = {
-            ...ativo,
-            status: ativo.status === "Disponível"
-                ? "Em uso"
-                : "Disponível"
-        };
-
-        await fetch(`/api/${tipo}/${ativoSelecionado}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(atualizado)
-        });
-
-        carregarAtivos();
-    });
-}
-// =====================
 // Imprimir Etiqueta
 // =====================
 

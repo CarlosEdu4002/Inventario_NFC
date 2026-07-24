@@ -9,6 +9,7 @@ const initDatabase = require("./database/init");
 const categoriasRoutes = require("./routes/categorias.routes");
 const tiposAtivoRoutes = require("./routes/tiposAtivo.routes");
 const ativosRoutes = require("./routes/ativos.routes");
+const camposRoutes = require("./routes/campos.routes");
 
 // =====================
 // Configurações
@@ -35,6 +36,7 @@ app.use(
 
 app.use("/api/categorias", categoriasRoutes);
 app.use("/api/tipos", tiposAtivoRoutes);
+app.use("/api/campos", camposRoutes);
 app.use("/api", ativosRoutes);
 
 // =====================
@@ -42,18 +44,26 @@ app.use("/api", ativosRoutes);
 // =====================
 
 async function iniciarServidor() {
-    try {
-        await initDatabase();
+    await initDatabase();
 
-        app.listen(PORT, () => {
+    return new Promise((resolve) => {
+        const servidor = app.listen(PORT, () => {
             console.log(
                 `Servidor rodando em http://localhost:${PORT}`
             );
+            resolve(servidor);
         });
-    } catch (erro) {
-        console.error("Erro ao iniciar o servidor:", erro);
-        process.exit(1);
-    }
+    });
 }
 
-iniciarServidor();
+if (require.main === module) {
+    iniciarServidor().catch((erro) => {
+        console.error("Erro ao iniciar o servidor:", erro);
+        process.exit(1);
+    });
+}
+
+module.exports = {
+    app,
+    iniciarServidor
+};

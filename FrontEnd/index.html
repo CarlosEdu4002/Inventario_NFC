@@ -1,37 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Inventário NFC</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Patrimonial</title>
     <link rel="shortcut icon" href="/Imagens/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/Imagens/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/style_Index.css">
-
 </head>
 <body>
-<div class="container">
+    <main class="pagina-inicial">
+        <header class="cabecalho-inicial">
+            <img
+                class="logo"
+                src="/Imagens/patena.png"
+                alt="Patena"
+            >
 
-    <img
-        class="logo"
-        src="/Imagens/patena.png" alt="Logo patena"
-        alt="Logo Patena">
+            <div>
+                <p class="rotulo-sistema">Inventário NFC</p>
+                <h1>Controle Patrimonial</h1>
+                <p id="instrucao">
+                    Selecione abaixo o tipo de ativo que deseja consultar.
+                </p>
+            </div>
 
-    <h1>CONTROLE PATRIMONIAL</h1>
+            <a
+                class="admin-link"
+                href="administracao.html"
+                aria-label="Abrir administração"
+                title="Administração"
+            >
+                <span aria-hidden="true">⚙</span>
+                Administração
+            </a>
+        </header>
 
-    <p id="instrucao">
-        Selecione a categoria que deseja acessar
-    </p>
+        <section
+            id="tiposAtivo"
+            class="categorias-grid"
+            aria-live="polite"
+        >
+            <p class="mensagem-carregamento">
+                Carregando tipos de ativo...
+            </p>
+        </section>
+    </main>
 
-    <button id="botaoPaleteira">
-        PALETEIRAS
-    </button>
-<br><br>
-    <button id="botaoEmpilhadeira">
-        EMPILHADEIRAS MANUAIS
-    </button>
-
-</div>
-
-
-<script src="js/index.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

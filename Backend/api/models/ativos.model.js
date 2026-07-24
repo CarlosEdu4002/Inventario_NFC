@@ -9,7 +9,8 @@ async function buscarTipoPorNome(tipo) {
         `
         SELECT id
         FROM tipos_ativo
-        WHERE LOWER(nome) = LOWER($1)
+        WHERE id::TEXT = $1
+           OR LOWER(nome) = LOWER($1)
         `,
         [tipo]
     );
@@ -26,7 +27,8 @@ async function listarPorTipo(tipo) {
         FROM ativos a
         INNER JOIN tipos_ativo t
             ON t.id = a.tipo_ativo_id
-        WHERE LOWER(t.nome) = LOWER($1)
+        WHERE t.id::TEXT = $1
+           OR LOWER(t.nome) = LOWER($1)
         ORDER BY a.patrimonio
         `,
         [tipo]
@@ -44,7 +46,8 @@ async function buscarPorPatrimonio(tipo, patrimonio) {
         FROM ativos a
         INNER JOIN tipos_ativo t
             ON t.id = a.tipo_ativo_id
-        WHERE LOWER(t.nome) = LOWER($1)
+        WHERE (t.id::TEXT = $1
+           OR LOWER(t.nome) = LOWER($1))
           AND a.patrimonio = $2
         `,
         [tipo, patrimonio]

@@ -6,174 +6,212 @@ const btnCancelar = document.getElementById("cancelarModal");
 
 let modoModal = "cadastro";
 let ativoEditando = null;
+let camposFormulario = [];
 
-// =====================
-// Abrir cadastro
-// =====================
-function abrirModal() {
+function criarControleCampo(campo, valor, edicao) {
+    const grupo = document.createElement("div");
+    const label = document.createElement("label");
+    const tipoControle = tipoInput(campo);
+    const controle = document.createElement(
+        tipoControle === "textarea"
+            ? "textarea"
+            : tipoControle === "select"
+              ? "select"
+              : "input"
+    );
 
-    modoModal = "cadastro";
-    ativoEditando = null;
+    grupo.className = "grupo-campo";
+    label.htmlFor = `campo-${campo.nome}`;
+    label.textContent = campo.label;
 
-    modal.classList.remove("oculto");
-    tituloModal.textContent = "Novo Ativo";
+    controle.id = `campo-${campo.nome}`;
+    controle.name = campo.nome;
+    controle.required = campo.obrigatorio === true;
 
+    if (
+        tipoControle !== "textarea" &&
+        tipoControle !== "select"
+    ) {
+        controle.type = tipoControle;
+    }
+
+    if (tipoControle === "select") {
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent =
+            campo.opcoes?.length > 0
+                ? "Selecione"
+                : "Configure as opções na administração";
+        placeholder.disabled = true;
+        placeholder.selected = !valor;
+        controle.appendChild(placeholder);
+
+        const opcoes = [...(campo.opcoes || [])];
+
+        if (
+            valor !== undefined &&
+            valor !== null &&
+            valor !== "" &&
+            !opcoes.includes(valor)
+        ) {
+            opcoes.unshift(valor);
+        }
+
+        opcoes.forEach((opcao) => {
+            const option = document.createElement("option");
+            option.value = opcao;
+            option.textContent = opcao;
+            option.selected = String(opcao) === String(valor);
+            controle.appendChild(option);
+        });
+    } else if (tipoControle === "checkbox") {
+        controle.checked = valor === true;
+    } else {
+        controle.value = valor ?? "";
+    }
+
+    if (edicao && campo.editavel === false) {
+        controle.disabled = true;
+    }
+
+    grupo.appendChild(label);
+    grupo.appendChild(controle);
+    return grupo;
+}
+
+async function montarFormulario(ativo = {}) {
+    const contexto = await obterContextoTipo(tipo);
+    camposFormulario = contexto.campos;
     camposModal.innerHTML = "";
 
-    CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
-
-        if (campo.cadastrar === false) return;
-
-        const grupo = document.createElement("div");
-        grupo.className = "grupo-campo";
-
-        grupo.innerHTML = `
-            <label for="${campo.nome}">${campo.label}</label>
-            <input type="text" id="${campo.nome}" name="${campo.nome}">
-        `;
-
-        camposModal.appendChild(grupo);
+    camposFormulario.forEach((campo) => {
+        camposModal.appendChild(
+            criarControleCampo(
+                campo,
+                ativo[campo.nome],
+                modoModal === "edicao"
+            )
+        );
     });
 }
 
-// =====================
-// Abrir edição
-// =====================
-function abrirModalEdicao(ativo) {
-
-    modoModal = "edicao";
-    ativoEditando = ativo;
-
-    modal.classList.remove("oculto");
-    tituloModal.textContent = "Editar Ativo";
-
-    camposModal.innerHTML = "";
-
-    CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
-
-        if (campo.cadastrar === false) return;
-
-        const grupo = document.createElement("div");
-        grupo.className = "grupo-campo";
-
-        grupo.innerHTML = `
-            <label for="${campo.nome}">${campo.label}</label>
-            <input 
-                type="text" 
-                id="${campo.nome}" 
-                name="${campo.nome}"
-                value="${ativo[campo.nome] ?? ""}">
-        `;
-
-        camposModal.appendChild(grupo);
-    });
+async function abrirModal() {
+    try {
+        modoModal = "cadastro";
+        ativoEditando = null;
+        tituloModal.textContent = "Novo Ativo";
+        await montarFormulario();
+        modal.classList.remove("oculto");
+    } catch (erro) {
+        console.error(erro);
+        alert(erro.message);
+    }
 }
 
-// =====================
-// Fechar modal
-// =====================
+async function abrirModalEdicao(ativo) {
+    try {
+        modoModal = "edicao";
+        ativoEditando = ativo;
+        tituloModal.textContent = "Editar Ativo";
+        await montarFormulario(ativo);
+        modal.classList.remove("oculto");
+    } catch (erro) {
+        console.error(erro);
+        alert(erro.message);
+    }
+}
+
 function fecharModal() {
     modal.classList.add("oculto");
+    formModal.reset();
     ativoEditando = null;
     modoModal = "cadastro";
 }
 
-// =====================
-// Coletar dados
-// =====================
 function coletarDadosFormulario() {
-
     const dados = {};
 
-    CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
+    camposFormulario.forEach((campo) => {
+        const controle = document.getElementById(
+            `campo-${campo.nome}`
+        );
 
-        if (campo.cadastrar === false) {
-            dados[campo.nome] = campo.valorPadrao;
+        if (controle.disabled && modoModal === "edicao") {
+            dados[campo.nome] = ativoEditando[campo.nome];
             return;
         }
 
-        const input = document.getElementById(campo.nome);
-        dados[campo.nome] = input ? input.value : "";
+        if (campo.tipo === "booleano") {
+            dados[campo.nome] = controle.checked;
+            return;
+        }
+
+        dados[campo.nome] = controle.value.trim();
     });
 
     return dados;
 }
 
-// =====================
-// Eventos
-// =====================
-
-// cancelar
 btnCancelar.addEventListener("click", fecharModal);
 
-// submit (cadastro + edição)
-formModal.addEventListener("submit", async (e) => {
+formModal.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
 
-    e.preventDefault();
-
-    const dados = coletarDadosFormulario();
-
-    if (modoModal === "cadastro") {
-
-        await fetch(`/api/${tipo}`, {
-            method: "POST",
+    try {
+        const dados = coletarDadosFormulario();
+        const url =
+            modoModal === "cadastro"
+                ? `/api/${encodeURIComponent(tipo)}`
+                : `/api/${encodeURIComponent(
+                      tipo
+                  )}/${encodeURIComponent(ativoEditando.patrimonio)}`;
+        const response = await fetch(url, {
+            method: modoModal === "cadastro" ? "POST" : "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
         });
 
-    } else {
-
-        await fetch(`/api/${tipo}/${ativoEditando.patrimonio}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dados)
-        });
+        await lerResposta(response, "Erro ao salvar ativo");
+        fecharModal();
+        await carregarAtivos();
+    } catch (erro) {
+        console.error(erro);
+        alert(erro.message);
     }
-
-    fecharModal();
-    carregarAtivos();
 });
 
-function confirmarExclusao(texto, callback){
-
-    const modal = document.getElementById("modalConfirmacao");
-
-    const textoConfirmacao = document.getElementById("textoConfirmacao");
-
-    const btnCancelar = document.getElementById("btnCancelarRemocao");
-
-    const btnConfirmar = document.getElementById("btnConfirmarRemocao");
+function confirmarExclusao(texto, callback) {
+    const modalConfirmacao = document.getElementById(
+        "modalConfirmacao"
+    );
+    const textoConfirmacao = document.getElementById(
+        "textoConfirmacao"
+    );
+    const btnCancelarRemocao = document.getElementById(
+        "btnCancelarRemocao"
+    );
+    const btnConfirmarRemocao = document.getElementById(
+        "btnConfirmarRemocao"
+    );
 
     textoConfirmacao.textContent = texto;
+    modalConfirmacao.classList.remove("oculto");
 
-    modal.classList.remove("oculto");
-
-    function fechar(){
-
-        modal.classList.add("oculto");
-
-        btnCancelar.removeEventListener("click", cancelar);
-
-        btnConfirmar.removeEventListener("click", confirmar);
-
+    function fechar() {
+        modalConfirmacao.classList.add("oculto");
+        btnCancelarRemocao.removeEventListener("click", cancelar);
+        btnConfirmarRemocao.removeEventListener("click", confirmar);
     }
 
-    function cancelar(){
-
+    function cancelar() {
         fechar();
-
     }
 
-    function confirmar(){
-
+    function confirmar() {
         fechar();
-
         callback();
-
     }
 
-    btnCancelar.addEventListener("click", cancelar);
-
-    btnConfirmar.addEventListener("click", confirmar);
-
+    btnCancelarRemocao.addEventListener("click", cancelar);
+    btnConfirmarRemocao.addEventListener("click", confirmar);
 }

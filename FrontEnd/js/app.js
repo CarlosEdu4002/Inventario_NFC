@@ -1,88 +1,117 @@
-window.tipo = new URLSearchParams(window.location.search).get("tipo") || "paleteiras";
+window.tipo =
+    new URLSearchParams(window.location.search).get("tipo") ||
+    "paleteiras";
 
 let ativosCarregados = [];
 let ativoSelecionado = null;
+let contextoTipoAtual = null;
 
-function selecionarLinha(id, linha){
-
-    document.querySelectorAll("#tabela tr")
-        .forEach(tr => tr.classList.remove("selecionado"));
+function selecionarLinha(id, linha) {
+    document
+        .querySelectorAll("#tabela tr")
+        .forEach((tr) => tr.classList.remove("selecionado"));
 
     linha.classList.add("selecionado");
-
     ativoSelecionado = id;
 }
 
-function abrirAtivo(id){
-    window.location.href = `ativo.html?tipo=${tipo}&id=${id}`;
+function abrirAtivo(id) {
+    window.location.href = `ativo.html?tipo=${encodeURIComponent(
+        tipo
+    )}&id=${encodeURIComponent(id)}`;
+}
+
+function montarCabecalho(campos) {
+    const cabecalho = document.getElementById("cabecalhoTabela");
+    cabecalho.innerHTML = "";
+
+    camposVisiveis(campos).forEach((campo) => {
+        const th = document.createElement("th");
+        th.textContent = campo.label;
+        cabecalho.appendChild(th);
+    });
+}
+
+function atualizarIdentificacao(contexto) {
+    const categoria = document.getElementById("categoriaAtual");
+    const tipoTitulo = document.getElementById("tipoAtual");
+
+    categoria.textContent =
+        contexto.tipo.categoria_nome || "Sem categoria";
+    tipoTitulo.textContent = contexto.tipo.nome;
+    document.title =
+        `${contexto.tipo.nome} | Controle Patrimonial`;
 }
 
 async function carregarAtivos() {
+    const tabela = document.getElementById("tabela");
 
     try {
+        contextoTipoAtual =
+            contextoTipoAtual || (await obterContextoTipo(tipo));
 
-        const res = await fetch(`/api/${tipo}`);
-        const ativos = await res.json();
+        const response = await fetch(
+            `/api/${encodeURIComponent(tipo)}`
+        );
+        const ativos = await lerResposta(
+            response,
+            "Erro ao carregar ativos"
+        );
 
-// Ordena pelo patrimônio
-    ativos.sort((a, b) =>
-    a.patrimonio.localeCompare(b.patrimonio, undefined, {
-        numeric: true,
-        sensitivity: "base"
-    })
-);
+        ativos.sort((a, b) =>
+            a.patrimonio.localeCompare(b.patrimonio, undefined, {
+                numeric: true,
+                sensitivity: "base"
+            })
+        );
 
-ativosCarregados = ativos;
-
-        const tabela = document.getElementById("tabela");
+        ativosCarregados = ativos;
         tabela.innerHTML = "";
 
         const isTouch = navigator.maxTouchPoints > 0;
+        const campos = camposVisiveis(contextoTipoAtual.campos);
 
-        ativos.forEach(a => {
-
+        ativos.forEach((ativo) => {
             const linha = document.createElement("tr");
 
-            CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
-
+            campos.forEach((campo) => {
                 const td = document.createElement("td");
-                td.textContent = a[campo.nome] ?? "";
+                td.textContent = formatarValorCampo(
+                    campo,
+                    ativo[campo.nome]
+                );
                 linha.appendChild(td);
-
             });
 
             linha.addEventListener("click", () => {
-
-                selecionarLinha(a.patrimonio, linha);
+                selecionarLinha(ativo.patrimonio, linha);
 
                 if (isTouch) {
-                    abrirAtivo(a.patrimonio);
+                    abrirAtivo(ativo.patrimonio);
                 }
-
             });
 
             if (!isTouch) {
-
                 linha.addEventListener("dblclick", () => {
-                    abrirAtivo(a.patrimonio);
+                    abrirAtivo(ativo.patrimonio);
                 });
-
             }
 
             tabela.appendChild(linha);
-
         });
+    } catch (erro) {
+        console.error(erro);
+        tabela.innerHTML = "";
 
-    } catch (err) {
-
-        console.error(err);
-
+        const linha = document.createElement("tr");
+        const celula = document.createElement("td");
+        celula.textContent = erro.message;
+        linha.appendChild(celula);
+        tabela.appendChild(linha);
     }
-
 }
 
-function buscarAtivo(){
-
+function buscarAtivo() {
     const texto = document
         .getElementById("buscaId")
         .value
@@ -90,36 +119,27 @@ function buscarAtivo(){
         .toUpperCase();
 
     const ativo = ativosCarregados.find(
-        a => a.patrimonio.toUpperCase() === texto
+        (item) => item.patrimonio.toUpperCase() === texto
     );
 
-    if(!ativo){
-
+    if (!ativo) {
         alert("Ativo não encontrado");
-
         return;
     }
 
     abrirAtivo(ativo.patrimonio);
 }
 
-function montarCabecalho() {
-
-    const cabecalho = document.getElementById("cabecalhoTabela");
-
-    cabecalho.innerHTML = "";
-
-    CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
-
-        const th = document.createElement("th");
-
-        th.textContent = campo.label;
-
-        cabecalho.appendChild(th);
-
-    });
-
+async function iniciarPaginaAtivos() {
+    try {
+        contextoTipoAtual = await obterContextoTipo(tipo);
+        atualizarIdentificacao(contextoTipoAtual);
+        montarCabecalho(contextoTipoAtual.campos);
+        await carregarAtivos();
+    } catch (erro) {
+        console.error(erro);
+        alert(erro.message);
+    }
 }
 
-montarCabecalho();
-carregarAtivos();
+iniciarPaginaAtivos();

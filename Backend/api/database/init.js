@@ -15,6 +15,7 @@ async function initDatabase() {
     } catch (err) {
         console.error("Erro ao inicializar o banco:");
         console.error(err);
+        throw err;
     }
 }
 

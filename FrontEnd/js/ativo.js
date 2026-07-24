@@ -1,46 +1,52 @@
-// Pega o ID da URL: ativo.html?id=PAL001
-// Pega os parâmetros da URL
 const params = new URLSearchParams(window.location.search);
-
 const tipo = params.get("tipo") || "paleteiras";
 const id = params.get("id");
 
-    async function carregarAtivo() {
-      const container = document.getElementById("conteudo");
+async function carregarAtivo() {
+    const container = document.getElementById("conteudo");
 
-      if (!id) {
-        container.innerHTML = `<p class="erro">ID não informado na URL</p>`;
+    if (!id) {
+        container.innerHTML =
+            '<p class="erro">ID não informado na URL</p>';
         return;
-      }
-
-      try {
-        const response = await fetch(`/api/${tipo}/${id}`);
-
-        if (!response.ok) {
-          throw new Error("Ativo não encontrado");
-        }
-
-        const ativo = await response.json();
-
-      container.innerHTML = "";
-
-      CONFIG_CATEGORIAS[tipo].campos.forEach(campo => {
-
-        const linha = document.createElement("div");
-        linha.className = "linha";
-
-         linha.innerHTML = `
-        <span class="label">${campo.label}:</span>
-        ${ativo[campo.nome] ?? "N/A"}
-    `;
-
-    container.appendChild(linha);
-
-});
-
-      } catch (err) {
-        container.innerHTML = `<p class="erro">Erro ao carregar ativo</p>`;
-      }
     }
 
-    carregarAtivo();
+    try {
+        const [contexto, response] = await Promise.all([
+            obterContextoTipo(tipo),
+            fetch(
+                `/api/${encodeURIComponent(tipo)}/${encodeURIComponent(
+                    id
+                )}`
+            )
+        ]);
+        const ativo = await lerResposta(
+            response,
+            "Ativo não encontrado"
+        );
+
+        container.innerHTML = "";
+
+        camposVisiveis(contexto.campos).forEach((campo) => {
+            const linha = document.createElement("div");
+            const label = document.createElement("span");
+            const valor = document.createElement("span");
+
+            linha.className = "linha";
+            label.className = "label";
+            label.textContent = `${campo.label}:`;
+            valor.textContent =
+                formatarValorCampo(campo, ativo[campo.nome]) || "N/A";
+
+            linha.appendChild(label);
+            linha.appendChild(valor);
+            container.appendChild(linha);
+        });
+    } catch (erro) {
+        console.error(erro);
+        container.innerHTML =
+            '<p class="erro">Erro ao carregar ativo</p>';
+    }
+}
+
+carregarAtivo();
